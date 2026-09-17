@@ -1,1 +1,196 @@
-FILEPLACEHOLDER
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abrir en Workspaces</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --surface-sunken: #eef0f3;
+    --border: #dfe3e9;
+    --text: #191c22;
+    --text-secondary: #5b6472;
+    --text-tertiary: #8991a0;
+    --accent: #005bc1;
+    --accent-ink: #ffffff;
+    --accent-soft: #e7f0fd;
+    --ok: #1a7f4e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161b;
+      --surface: #1d2027;
+      --surface-sunken: #23262e;
+      --border: #2c303a;
+      --text: #eceef2;
+      --text-secondary: #9aa3b2;
+      --text-tertiary: #6c7683;
+      --accent: #4c8dff;
+      --accent-ink: #0b1220;
+      --accent-soft: #1c2a42;
+      --ok: #4ade95;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px 32px;
+    box-shadow: 0 1px 2px rgba(20, 24, 32, 0.04), 0 12px 32px -16px rgba(20, 24, 32, 0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+  .mark {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .mark svg { width: 24px; height: 24px; }
+  .mark path { stroke: var(--accent); }
+  h1 {
+    margin: 0;
+    font-family: Georgia, "Iowan Old Style", serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .status {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: 32ch;
+  }
+  .btn {
+    appearance: none;
+    border: none;
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.12s ease, filter 0.12s ease;
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { transform: scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .target {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .target-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  .target code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    overflow-x: auto;
+    white-space: nowrap;
+    text-align: left;
+    flex: 1;
+  }
+  .hint { margin: 0; font-size: 0.78rem; color: var(--text-tertiary); line-height: 1.5; }
+  .empty h1 { font-size: 1.3rem; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 15L15 9M10 6l1.4-1.4a4 4 0 0 1 5.6 5.6L15.6 11.6M14 18l-1.4 1.4a4 4 0 0 1-5.6-5.6L8.4 12.4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div id="withId">
+      <h1>Tu proyecto está listo</h1>
+      <p class="status">Pulsa el botón para abrirlo en Workspaces.</p>
+    </div>
+
+    <div id="withoutId" class="empty" hidden>
+      <h1>Nada que abrir</h1>
+      <p class="status">Este enlace necesita un proyecto. Cópialo desde el botón de enlace dentro de Workspaces, en la cabecera del proyecto.</p>
+    </div>
+
+    <a class="btn" id="openBtn" href="#" hidden>
+      <span>Abrir en Workspaces</span>
+    </a>
+
+    <div class="target" id="targetRow" hidden>
+      <span class="target-dot" aria-hidden="true"></span>
+      <code id="targetCode"></code>
+    </div>
+
+    <p class="hint" id="hintText" hidden>¿No pasa nada al pulsar? Comprueba que Workspaces esté instalado en este Mac.</p>
+  </div>
+
+  <script>
+    (function () {
+      var id = new URLSearchParams(window.location.search).get("id");
+      var withId = document.getElementById("withId");
+      var withoutId = document.getElementById("withoutId");
+      var openBtn = document.getElementById("openBtn");
+      var targetRow = document.getElementById("targetRow");
+      var targetCode = document.getElementById("targetCode");
+      var hintText = document.getElementById("hintText");
+
+      if (!id) {
+        withId.hidden = true;
+        withoutId.hidden = false;
+        return;
+      }
+
+      // El navegador solo deja saltar a un esquema propio (workspaces://) de
+      // forma fiable cuando lo dispara un clic real del usuario — un salto
+      // automático en la carga de la página se bloquea en silencio en varios
+      // navegadores. Por eso el botón, visible desde el principio, es el
+      // único disparador.
+      var target = "workspaces://project/" + encodeURIComponent(id);
+      openBtn.href = target;
+      openBtn.hidden = false;
+      targetCode.textContent = target;
+      targetRow.hidden = false;
+      hintText.hidden = false;
+    })();
+  </script>
+</body>
+</html>
